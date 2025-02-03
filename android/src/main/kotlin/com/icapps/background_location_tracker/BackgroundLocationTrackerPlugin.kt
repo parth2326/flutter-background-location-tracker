@@ -112,7 +112,10 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
 
     @Deprecated(message = "Use the Android v2 embedding method.")
     private class ProxyLifecycleProvider internal constructor(activity: Activity) : Application.ActivityLifecycleCallbacks, LifecycleOwner {
-        override val lifecycle = LifecycleRegistry(this)
+        private val _lifecycle = LifecycleRegistry(this)
+        
+        override fun getLifecycle(): Lifecycle = _lifecycle
+        
         private val registrarActivityHashCode: Int = activity.hashCode()
 
         init {
@@ -123,35 +126,35 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
             if (activity.hashCode() != registrarActivityHashCode) {
                 return
             }
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 
         override fun onActivityStarted(activity: Activity) {
             if (activity.hashCode() != registrarActivityHashCode) {
                 return
             }
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }
 
         override fun onActivityResumed(activity: Activity) {
             if (activity.hashCode() != registrarActivityHashCode) {
                 return
             }
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         }
 
         override fun onActivityPaused(activity: Activity) {
             if (activity.hashCode() != registrarActivityHashCode) {
                 return
             }
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         }
 
         override fun onActivityStopped(activity: Activity) {
             if (activity.hashCode() != registrarActivityHashCode) {
                 return
             }
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         }
 
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
@@ -161,7 +164,7 @@ class BackgroundLocationTrackerPlugin : FlutterPlugin, MethodCallHandler, Activi
                 return
             }
             activity.application.unregisterActivityLifecycleCallbacks(this)
-            lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            _lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
     }
 }
